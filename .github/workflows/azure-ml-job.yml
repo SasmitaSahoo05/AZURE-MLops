@@ -1,0 +1,38 @@
+name: Trigger Azure ML Job
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+
+    - name: Set up Python 3.8
+      uses: actions/setup-python@v2
+      with:
+        python-version: '3.8'
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r dependencies/requirements.txt
+
+    - name: Azure Login
+      uses: azure/login@v1
+      with:
+        creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+    - name: Trigger Azure ML Job
+      env:
+        KEY_VAULT_URI: ${{ secrets.KEY_VAULT_URI }}
+        AZURE_CLIENT_ID: ${{ secrets.AZURECLIENTID }}
+        AZURE_TENANT_ID: ${{ secrets.AZURETENANTID }}
+        AZURE_CLIENT_SECRET: ${{ secrets.AZURECLIENTSECRET }}
+      run: |
+        python azure-ml-entry-v2.py  # This script should be triggered as per your request
